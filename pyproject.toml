@@ -6,7 +6,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "fieldrouter"
-version = "0.1.0"
+version = "0.1.1"
 description = "Data model validation for nested data routes"
 authors = [
     { name = "Louis Maddox", email = "louismmx@gmail.com" },
@@ -19,6 +19,10 @@ readme = "README.md"
 
 [project.license]
 text = "MIT"
+
+[project.urls]
+Homepage = "https://github.com/lmmx/fieldrouter"
+Repository = "https://github.com/lmmx/fieldrouter.git"
 
 [tool.pdm]
 distribution = true
