@@ -52,3 +52,47 @@ Then you can use the router class as a generic type argument to the instance of 
 ```py
 model = What[Where].model_validate(data)
 ```
+
+
+## Route syntax
+
+### Relative references
+
+You can reference another field in a route by prefixing its field name by a dot, such as `x` here:
+
+```py
+class Where(Router):
+    x: Route = "foo.0.etc"
+    b1: Route = ".x.0.bar"
+    b2: Route = ".x.1.bar"
+```
+
+The prefix `.x` is substituted for `foo.0.etc` (the value of the Route for the field x).
+
+This is equivalent to the following routes without references to the `x` field:
+
+```py
+class Where(Router):
+    x: Route = "foo.0.etc"
+    b1: Route = "foo.0.etc.0.bar"
+    b2: Route = "foo.0.etc.1.bar"
+```
+
+Use this to keep your subpaths readable.
+
+
+### The identity route
+
+Sometimes when you're exploring nested data you want a reminder (or easy access to) the entire
+data at a given route. This is available at the `.` route (the route string made up of a single
+dot). This is known as the 'identity' route.
+
+```py
+class Where(Router):
+    full: Route = "."
+
+class What(Routed[R]):
+    full: dict
+```
+
+This will just give you the entire input, in this case as a dict under the field named `full`.
