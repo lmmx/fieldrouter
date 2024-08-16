@@ -11,3 +11,7 @@ def test_nested():
 
 def test_reference():
     importorskip("examples.reference")
+
+
+def test_identity():
+    importorskip("examples.identity")

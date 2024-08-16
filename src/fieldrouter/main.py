@@ -89,8 +89,10 @@ class Routed(BaseModel, Generic[R], extra="forbid"):
         router = route_model()
         values = {}
         for field, route in router.model_dump().items():
-            has_referent_root = route[0] == ""
-            if has_referent_root:
+            if is_identity_route := route == ["", ""]:
+                values.update({field: data})
+                continue
+            elif has_referent_root := route[0] == "":
                 # This could fail if the referent doesn't exist or the route's malformed
                 referent = route[1]
                 path = route[2:]
