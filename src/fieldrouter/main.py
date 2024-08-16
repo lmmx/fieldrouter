@@ -87,10 +87,18 @@ class Routed(BaseModel, Generic[R], extra="forbid"):
         values = {}
         route_model = cls.__pydantic_generic_metadata__["args"][0]
         router = route_model()
-        values = {
-            field: extract_subpath(path=route, data=data)
-            for field, route in router.model_dump().items()
-        }
+        values = {}
+        for field, route in router.model_dump().items():
+            has_referent_root = route[0] == ""
+            if has_referent_root:
+                # This could fail if the referent doesn't exist or the route's malformed
+                referent = route[1]
+                path = route[2:]
+                source = values[referent]
+            else:
+                path = route
+                source = data
+            values.update({field: extract_subpath(path=path, data=source)})
         for unrouted_field in set(cls.model_fields) - set(router.model_fields):
             reporter = ValueError(f"No route for {unrouted_field}")
             values.update({unrouted_field: reporter})
