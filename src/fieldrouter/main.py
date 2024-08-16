@@ -3,6 +3,8 @@ from typing import Annotated, Any, Generic, TypeVar, Union
 
 from pydantic import BaseModel, BeforeValidator, TypeAdapter, model_validator
 
+__all__ = ("R", "Route", "Routed", "Router")
+
 RoutePart = Union[int, str]
 rp_ta = TypeAdapter(RoutePart)
 
