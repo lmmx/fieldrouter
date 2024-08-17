@@ -1,9 +1,8 @@
-from pathlib import Path
-from typing import Annotated, Any, Generic, TypeVar, Union
+from typing import Annotated, Any, TypeVar, Union
 
 from pydantic import BaseModel, BeforeValidator, TypeAdapter, model_validator
 
-__all__ = ("R", "Route", "Routed", "Router")
+__all__ = ("Route", "Routing", "RoutingModel")
 
 RoutePart = Union[int, str]
 rp_ta = TypeAdapter(RoutePart)
@@ -24,21 +23,21 @@ Route = Annotated[list[RoutePart], BeforeValidator(split_route)]
 """The `.`-separated string keys and integers that specify a JSON-like subpath."""
 
 
-class Router(BaseModel, validate_default=True):
-    """A model which should be subclassed to specify `Route` type fields).
+class Via:
+    routes: Route | list[Route]
 
-    For example:
+    def __init__(self, routes):
+        self.routes = routes
 
-    ```py
-    from fieldrouter import Router, Route
-
-    class Where(Router):
-        value_1: Route = "example.subpath.0"
-    ```
-    """
+    def __repr__(self):
+        return f"Via(routes={self.routes})"
 
 
-R = TypeVar("R", bound=Router)
+T = TypeVar("T")
+
+
+def Routing(tp: T, *, via: str) -> Annotated[T, Via]:
+    return Annotated[tp, Via(routes=[via])]
 
 
 def extract_subpath(path: Route, data: dict) -> Any:
@@ -51,7 +50,7 @@ def extract_subpath(path: Route, data: dict) -> Any:
             case int() as idx:
                 data = (
                     data[idx]
-                    if isinstance(data, list) and -len(data) <= idx < len(data)
+                    if isinstance(data, list) and 0 <= idx < len(data)
                     else reporter
                 )
         if data is reporter:
@@ -59,49 +58,31 @@ def extract_subpath(path: Route, data: dict) -> Any:
     return data
 
 
-class Routed(BaseModel, Generic[R], extra="forbid"):
+class RoutingModel(BaseModel):
     """A model which should be subclassed to specify fields at the associated routes.
 
-    When using, the router subclass (with the same field names as this model) should be
-    passed as its generic type argument.
-
     ```py
-    from fieldrouter import R, Route, Routed, Router
+    from typing import Annotated
+    from fieldrouter.v2 import Route, RoutingModel
 
 
-    class Where(Router):
-        some_value: Route = "example.subpath.0"
-
-
-    class What(Routed[R]):
-        some_value: int
+    class DataRouter(RoutingModel):
+        some_value: Annotated[int, Route("example.subpath.0")]
 
 
     data = {"example": {"subpath": [100]}}
-    result = What[Where].model_validate(data).some_value  # 100
+    result = DataRouter.model_validate(data).some_value  # 100
     ```
     """
 
     @model_validator(mode="before")
     def supply_routes(cls, data: dict):
         values = {}
-        route_model = cls.__pydantic_generic_metadata__["args"][0]
-        router = route_model()
-        values = {}
-        for field, route in router.model_dump().items():
-            if is_identity_route := route == ["", ""]:
-                values.update({field: data})
-                continue
-            elif has_referent_root := route[0] == "":
-                # This could fail if the referent doesn't exist or the route's malformed
-                referent = route[1]
-                path = route[2:]
-                source = values[referent]
-            else:
-                path = route
-                source = data
-            values.update({field: extract_subpath(path=path, data=source)})
-        for unrouted_field in set(cls.model_fields) - set(router.model_fields):
-            reporter = ValueError(f"No route for {unrouted_field}")
-            values.update({unrouted_field: reporter})
+        for field, route_meta in cls.model_fields.items():
+            match route_meta.metadata:
+                case [Via()]:
+                    route_string = route_meta.metadata[0].routes[0]
+                    route = split_route(route_string)
+                    route_data = extract_subpath(path=route, data=data)
+                    values[field] = route_data
         return values

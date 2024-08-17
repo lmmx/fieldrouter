@@ -1,3 +1,4 @@
-from .main import R, Route, Routed, Router
+from .main import Routing, RoutingModel
+from . import generic
 
-__all__ = ("R", "Route", "Routed", "Router")
+__all__ = ("Routing", "RoutingModel", "generic")

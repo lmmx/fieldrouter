@@ -1,4 +1,4 @@
-from fieldrouter import R, Route, Routed, Router
+from fieldrouter.generic import R, Route, Routed, Router
 from pydantic import Field
 
 

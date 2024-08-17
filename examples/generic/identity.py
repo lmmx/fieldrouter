@@ -1,6 +1,6 @@
 """A route of just a . on its own is the identity (the entire input)."""
 
-from fieldrouter import R, Route, Routed, Router
+from fieldrouter.generic import R, Route, Routed, Router
 
 
 class Where(Router):
