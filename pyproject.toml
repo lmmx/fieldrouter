@@ -1,18 +1,18 @@
 [build-system]
 requires = [
-  "pdm-backend"
+    "pdm-backend",
 ]
 build-backend = "pdm.backend"
 
 [project]
 name = "fieldrouter"
-version = "0.1.4"
+version = "1.0.0"
 description = "Data model validation for nested data routes"
 authors = [
-  {name = "Louis Maddox", email = "louismmx@gmail.com"}
+    { name = "Louis Maddox", email = "louismmx@gmail.com" },
 ]
 dependencies = [
-  "pydantic>=2.8.2"
+    "pydantic>=2.8.2",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
@@ -29,5 +29,5 @@ distribution = true
 
 [tool.pdm.dev-dependencies]
 test = [
-  "pytest>=8.3.2"
+    "pytest>=8.3.2",
 ]
