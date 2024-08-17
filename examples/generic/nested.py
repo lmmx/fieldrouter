@@ -9,7 +9,7 @@ class Where(Router):
     field_3: Route = "b.bb.2"
 
 
-class What(Routed[R], extra="forbid"):
+class What(Routed[R]):
     field_1: str
     field_2: str
     field_3: int

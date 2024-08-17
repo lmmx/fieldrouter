@@ -36,12 +36,21 @@ class Via:
 T = TypeVar("T")
 
 
-def Routing(tp: T, *, via: str) -> Annotated[T, Via]:
+def Routing(tp: T, via: str |list[str]) -> Annotated[T, Via]:
+    match via:
+        case list():
+            routes = via
+        case str():
+            routes = [via]
+        case _ as t:
+            raise TypeError(f"Expected a route string or list of strings, got {t}")
     return Annotated[tp, Via(routes=[via])]
 
 
 def extract_subpath(path: Route, data: dict) -> Any:
     """Extract a subpath or else an error reporter fallback indicating where it failed."""
+    if path == ["", ""]:
+        return data
     for part_idx, part in enumerate(path):
         reporter = ValueError(f"Missing {part=} on {path}")
         match part:
@@ -77,12 +86,25 @@ class RoutingModel(BaseModel):
 
     @model_validator(mode="before")
     def supply_routes(cls, data: dict):
-        values = {}
+        values = dict(data)  # Make a copy to mutate
         for field, route_meta in cls.model_fields.items():
             match route_meta.metadata:
                 case [Via()]:
                     route_string = route_meta.metadata[0].routes[0]
                     route = split_route(route_string)
-                    route_data = extract_subpath(path=route, data=data)
+                    # A field reference is when the route begins with a . (e.g. ".foo")
+                    # except the identity route (".") which reproduces the entire input
+                    if route[0] == "" and route[1:] != [""]:
+                        # This could fail if the referent doesn't exist or the route's malformed
+                        if (referent := route[1]) not in values:
+                            raise NameError(f"No such referent {referent}")
+                        path = route[2:]
+                        source = values[referent]
+                    else:
+                        path = route
+                        source = data
+                    route_data = extract_subpath(path=path, data=source)
                     values[field] = route_data
+                case _:
+                    pass  # Do not otherwise interfere with the data
         return values

@@ -83,7 +83,7 @@ class Routed(BaseModel, Generic[R]):
 
     @model_validator(mode="before")
     def supply_routes(cls, data: dict):
-        values = {}
+        values = dict(data)  # Make a copy
         route_model = cls.__pydantic_generic_metadata__["args"][0]
         router = route_model()
         for field, route in router.model_dump().items():
