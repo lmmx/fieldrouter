@@ -36,7 +36,7 @@ class Via:
 T = TypeVar("T")
 
 
-def Routing(tp: T, via: str |list[str]) -> Annotated[T, Via]:
+def Routing(tp: T, via: str | list[str]) -> Annotated[T, Via]:
     match via:
         case list():
             routes = via
@@ -59,7 +59,7 @@ def extract_subpath(path: Route, data: dict) -> Any:
             case int() as idx:
                 data = (
                     data[idx]
-                    if isinstance(data, list) and 0 <= idx < len(data)
+                    if isinstance(data, list) and -len(data) <= idx < len(data)
                     else reporter
                 )
         if data is reporter:
