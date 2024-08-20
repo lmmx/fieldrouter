@@ -43,7 +43,7 @@ R = TypeVar("R", bound=Router)
 def extract_subpath(path: Route, data: dict) -> Any:
     """Extract a subpath or else an error reporter fallback indicating where it failed."""
     for part_idx, part in enumerate(path):
-        reporter = ValueError(f"Missing {part=} on {path}")
+        reporter = KeyError(f"{part!r} missing on {path}")
         match part:
             case str() as key:
                 data = data.get(key, reporter)
