@@ -1,5 +1,4 @@
 from fieldrouter import Routing, RoutingModel
-import re
 from pydantic import ByteSize, field_validator
 
 

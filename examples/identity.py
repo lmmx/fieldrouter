@@ -1,11 +1,15 @@
 """A route of just a . on its own is the identity (the entire input)."""
+
 from fieldrouter import Routing, RoutingModel
 
 
 class ModelWithIdentityRef(RoutingModel):
     full: Routing(dict, ".")
     a_normal: Routing(int, "a")
-    a_by_ref: Routing(int, ".full.a")  # Note: don't actually do this, it's just to demo!
+    a_by_ref: Routing(
+        int,
+        ".full.a",
+    )  # Note: don't actually do this, it's just to demo!
 
 
 data = {"a": 1, "b": 2}

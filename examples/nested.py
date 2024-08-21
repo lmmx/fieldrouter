@@ -2,6 +2,7 @@ from fieldrouter import Routing, RoutingModel
 
 __all__ = ("NestedModel",)
 
+
 class NestedModel(RoutingModel):
     field_1: Routing(str, "a.aa.aaa.0")
     field_2: Routing(str, "a.aa.aaa.1")

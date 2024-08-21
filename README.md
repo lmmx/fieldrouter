@@ -108,4 +108,3 @@ Then you can use the router class as a generic type argument to the instance of 
 ```py
 model = What[Where].model_validate(data)
 ```
-

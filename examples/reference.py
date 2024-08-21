@@ -8,6 +8,7 @@ class ModelWithReferences(RoutingModel):
     b: Routing(int, ".referent.b.0")
     c: Routing(int, ".referent.c.value.0")
 
+
 data = {"first": {"part": {"a": 1, "b": [2], "c": {"value": [3]}}}}
 result = ModelWithReferences.model_validate(data)
 
