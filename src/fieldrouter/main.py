@@ -44,7 +44,7 @@ def Routing(tp: T, via: str | list[str]) -> Annotated[T, Via]:
             routes = [via]
         case _ as t:
             raise TypeError(f"Expected a route string or list of strings, got {t}")
-    return Annotated[tp, Via(routes=[via])]
+    return Annotated[tp, Via(routes=routes)]
 
 
 def extract_subpath(path: Route, data: dict) -> Any:
