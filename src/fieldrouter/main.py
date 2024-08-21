@@ -1,6 +1,13 @@
 from typing import Annotated, Any, TypeVar, Union
+import json
 
-from pydantic import BaseModel, BeforeValidator, TypeAdapter, model_validator
+from pydantic import (
+    BaseModel,
+    BeforeValidator,
+    TypeAdapter,
+    model_validator,
+    ValidationError,
+)
 
 __all__ = ("Route", "Routing", "RoutingModel")
 
@@ -47,16 +54,35 @@ def Routing(tp: T, via: str | list[str]) -> Annotated[T, Via]:
     return Annotated[tp, Via(routes=routes)]
 
 
+dict_ta = TypeAdapter(dict)
+list_ta = TypeAdapter(list)
+
+
+def throw_helpfully(via: str, report: str, ve: ValidationError):
+    input_ = json.loads(ve.json())[0]["input"]
+    raise TypeError(f"No {via} {report}: input={input_}") from None
+
+
 def extract_subpath(path: Route, data: dict) -> Any:
     """Extract a subpath or else an error reporter fallback indicating where it failed."""
     if path == ["", ""]:
         return data
+    # Validate to avoid finding a shape mismatch mid-way through the hierarchy
     for part_idx, part in enumerate(path):
-        reporter = KeyError(f"{part!r} missing on {path}")
+        report = f"{part!r} on {path}"
+        reporter = KeyError(report)
         match part:
             case str() as key:
+                try:
+                    dict_ta.validate_python(data)
+                except ValidationError as ve:
+                    throw_helpfully(via="dict", report=report, ve=ve)
                 data = data.get(key, reporter)
             case int() as idx:
+                try:
+                    list_ta.validate_python(data)
+                except ValidationError as ve:
+                    throw_helpfully(via="list", report=report, ve=ve)
                 data = (
                     data[idx]
                     if isinstance(data, list) and -len(data) <= idx < len(data)
