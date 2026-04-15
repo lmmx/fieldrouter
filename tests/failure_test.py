@@ -1,3 +1,5 @@
+from pytest import raises
+
 from fieldrouter import Routing, RoutingModel
 
 
@@ -7,8 +9,5 @@ def test_bad_route():
         a_value: Routing(int, "path.to.the.value.MISTYPE_MISS")
 
     data = {"path": {"to": {"the": {"value": [100]}}}}
-    DataRouter.model_validate(data)
-
-
-if __name__ == "__main__":
-    test_bad_route()
+    with raises(TypeError, match="No dict"):
+        DataRouter.model_validate(data)
