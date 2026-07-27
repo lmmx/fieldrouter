@@ -1,5 +1,6 @@
-from fieldrouter.generic import R, Route, Routed, Router
 from pydantic import Field
+
+from fieldrouter.generic import R, Route, Routed, Router
 
 
 class Where(Router):

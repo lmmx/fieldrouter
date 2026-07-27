@@ -1,5 +1,6 @@
-from fieldrouter import Routing, RoutingModel
 from pydantic import Field
+
+from fieldrouter import Routing, RoutingModel
 
 
 class ModelWithReferences(RoutingModel):

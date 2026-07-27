@@ -1,5 +1,6 @@
-from fieldrouter import Routing, RoutingModel
 from pydantic import ByteSize, field_validator
+
+from fieldrouter import Routing, RoutingModel
 
 
 class Dogs(ByteSize):

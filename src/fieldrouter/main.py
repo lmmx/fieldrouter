@@ -1,12 +1,12 @@
-from typing import Annotated, Any, TypeVar, Union
 import json
+from typing import Annotated, Any, TypeVar, Union
 
 from pydantic import (
     BaseModel,
     BeforeValidator,
     TypeAdapter,
-    model_validator,
     ValidationError,
+    model_validator,
 )
 
 __all__ = ("Route", "Routing", "RoutingModel")

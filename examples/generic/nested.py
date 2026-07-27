@@ -1,6 +1,6 @@
 from fieldrouter.generic import R, Route, Routed, Router
 
-__all__ = ("Where", "What")
+__all__ = ("What", "Where")
 
 
 class Where(Router):
