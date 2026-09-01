@@ -18,11 +18,14 @@ You would typically need to write Pydantic models for each level
 class A(BaseModel):
     a: AA
 
+
 class AA(BaseModel):
     aa: AAA
 
+
 class AAA(BaseModel):
     aaa: list[int]
+
 
 thirty = A.model_validate(data).a.aa.aaa[2]
 ```
@@ -33,8 +36,10 @@ With `fieldrouter` you would instead specify a 'route' for the subpath on a 'rou
 ```py
 from fieldrouter import Routing, RoutingModel
 
+
 class A(RoutingModel):
     thirty: Routing(int, "a.aa.aaa.2")
+
 
 thirty = A.model_validate(data).thirty
 ```
@@ -89,6 +94,7 @@ another for the types:
 ```py
 from fieldrouter.generic import RouterModel, Route
 
+
 class Where(RouterModel):
     thirty: Route = "a.aa.aaa.2"
 ```
@@ -98,6 +104,7 @@ Then you can model the value at that route with a corresponding field on a 'rout
 
 ```py
 from fieldrouter.generic import Routed, R
+
 
 class What(Routed[R]):
     thirty: int
