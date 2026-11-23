@@ -15,7 +15,7 @@ name = "fieldrouter"
 version = "1.0.4"
 description = "Data model validation for nested data routes"
 authors = [
-  {name = "Louis Maddox", email = "louismmx@gmail.com"}
+  { name = "Louis Maddox", email = "louismmx@gmail.com" }
 ]
 dependencies = [
   "pydantic>=2.12"
